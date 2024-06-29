@@ -11,24 +11,12 @@ const users = [
   { id: 1, username: 'admin', password: hashedPassword }
 ];
 
-const allowedIP = '178.134.63.32';
-
-// Middleware to check IP address
-const checkIP = (req, res, next) => {
-  const clientIP = req.ip;
-  if (clientIP === allowedIP) {
-    next();
-  } else {
-    res.status(404).send('Not Found');
-  }
-};
-
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-// Login endpoint with IP check
-app.post('/login', checkIP, (req, res) => {
+// Login endpoint
+app.post('/login', (req, res) => {
   const { username, password } = req.body;
   console.log('Login request received:', username, password);
 
@@ -49,11 +37,6 @@ app.post('/login', checkIP, (req, res) => {
     console.log('Authentication successful for:', username);
     res.json({ success: true });
   });
-});
-
-// Example protected admin route (optional)
-app.get('/admin', (req, res) => {
-  res.send('Welcome to the admin page.');
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
