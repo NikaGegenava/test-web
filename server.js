@@ -11,16 +11,15 @@ const users = [
   { id: 1, username: 'admin', password: hashedPassword }
 ];
 
-// List of allowed IP addresses
-const allowedIPs = ['178.134.63.32'];
+const allowedIP = '178.134.63.32';
 
 // Middleware to check IP address
 const checkIP = (req, res, next) => {
   const clientIP = req.ip;
-  if (allowedIPs.includes(clientIP)) {
+  if (clientIP === allowedIP) {
     next();
   } else {
-    res.status(403).json({ message: 'Access denied: Your IP is not allowed to access this page.' });
+    res.status(404).send('Not Found');
   }
 };
 
@@ -28,8 +27,8 @@ const checkIP = (req, res, next) => {
 app.use(cors());
 app.use(bodyParser.json());
 
-// Login endpoint
-app.post('/login', (req, res) => {
+// Login endpoint with IP check
+app.post('/login', checkIP, (req, res) => {
   const { username, password } = req.body;
   console.log('Login request received:', username, password);
 
@@ -52,9 +51,9 @@ app.post('/login', (req, res) => {
   });
 });
 
-// Example protected route
-app.get('/admin/main', checkIP, (req, res) => {
-  res.send('This is the admin main page accessible only by certain IPs.');
+// Example protected admin route (optional)
+app.get('/admin', (req, res) => {
+  res.send('Welcome to the admin page.');
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
